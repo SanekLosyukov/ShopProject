@@ -9,6 +9,7 @@ public enum RequestParamsEnum {
     USER("user"),
     ORDERPRODUCTS("orderProducts"),
     SEARCHED_PRODUCTS("searchedProducts"),
+    SEARCH_PARAMS("searchParams"),
     PRODUCT("product"),
     SHOPPING_CART_PRODUCTS("cartProductsList"),
     POPULAR_CATEGORIES_LIST_REQ_PARAM("categories"),

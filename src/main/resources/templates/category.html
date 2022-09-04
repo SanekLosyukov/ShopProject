@@ -29,14 +29,15 @@
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/cart/open}">Корзина</a>
                 </li>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/product/upload}">Добавить новые товары</a>
+                </li>
             </ul>
-            <form method="post" class="d-flex">
-                <input class="form-control me-2" id="search" type="text" placeholder="Введите название товара"
-                       name="search"
-                       required>
-                <a th:href="@{/search}">
-                    <button class="btn btn-primary" type="button">Найти</button>
-                </a>
+            <form method="post" th:action="@{/search}" class="d-flex">
+                <input class="form-control me-2" id="searchKey" type="text" placeholder="Введите название товара"
+                       name="searchKey" required>
+                <button class="btn btn-primary" type="submit">Найти</button>
             </form>
         </div>
     </div>
@@ -70,7 +71,7 @@
     <div class="row" th:each="p : ${category.productList}">
         <div class="col-sm-2 p-3 ">
             <a th:href="@{'/product/' + ${p.id}}"></a>
-            <img class="card-img" style="width:120px;height:150px"
+            <img class="card-img" style="width:120px;height:130px"
                  th:src="${'/images/' + p.getMainImage}" alt="Card image">
             </a>
             <br>

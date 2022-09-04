@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
-
 import static by.teachmeskills.eshop.EshopConstants.PRODUCT_ID_PARAM;
 import static by.teachmeskills.eshop.EshopConstants.SHOPPING_CART;
 import static by.teachmeskills.eshop.PagesPathEnum.CART_PAGE;
@@ -31,11 +30,11 @@ public class CartController {
         return cartService.addProductToCart(productId, shopCart);
     }
 
-//    @GetMapping("/remove")
-//    public ModelAndView removeProductFromShoppingCart(@RequestParam(PRODUCT_ID_PARAM) String id, @ModelAttribute(SHOPPING_CART) Cart shopCart) throws Exception {
-//        int productId = Integer.parseInt(id);
-//        return cartService.removeProductFromShoppingCart(productId, shopCart);
-//    }
+    @GetMapping("/remove")
+    public ModelAndView removeProductFromShoppingCart(@RequestParam(PRODUCT_ID_PARAM) String id, @ModelAttribute(SHOPPING_CART) Cart shopCart) throws Exception {
+        int productId = Integer.parseInt(id);
+        return cartService.removeProductFromShoppingCart(productId, shopCart);
+    }
 
     @GetMapping("/open")
     public ModelAndView redirectToShoppingCart() {

@@ -1,7 +1,6 @@
 package by.teachmeskills.eshop.controllers;
 
 import by.teachmeskills.eshop.entities.User;
-import by.teachmeskills.eshop.exceptions.AuthorizationException;
 import by.teachmeskills.eshop.services.CustomUserDetailsService;
 import by.teachmeskills.eshop.services.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,10 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.validation.Valid;
 import java.util.Objects;
-
 import static by.teachmeskills.eshop.EshopConstants.USER;
 import static by.teachmeskills.eshop.PagesPathEnum.REGISTER_PAGE;
 import static by.teachmeskills.eshop.PagesPathEnum.SIGN_IN_PAGE;
@@ -39,17 +35,6 @@ public class AuthController {
     public ModelAndView openLoginPage() {
         return new ModelAndView(SIGN_IN_PAGE.getPath());
     }
-
-//    @PostMapping
-//    public ModelAndView login(@ModelAttribute("user") @Valid User user, BindingResult bindingResult, ModelAndView modelAndView) throws AuthorizationException {
-//        if (bindingResult.hasErrors()) {
-//            populateError("email", modelAndView, bindingResult);
-//            populateError("password", modelAndView, bindingResult);
-//            modelAndView.setViewName(SIGN_IN_PAGE.getPath());
-//            return modelAndView;
-//        }
-//        return userService.authenticate(user);
-//    }
 
     @GetMapping("/register")
     public ModelAndView openRegisterPage() {

@@ -14,14 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import static by.teachmeskills.eshop.PagesPathEnum.CATEGORY_PAGE;
 import static by.teachmeskills.eshop.RequestParamsEnum.CATEGORY_PARAM;
 

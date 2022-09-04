@@ -1,6 +1,5 @@
 package by.teachmeskills.eshop.entities;
 
-import by.teachmeskills.eshop.utils.PasswordConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,13 +7,11 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 

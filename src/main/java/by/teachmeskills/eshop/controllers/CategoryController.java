@@ -2,12 +2,6 @@ package by.teachmeskills.eshop.controllers;
 
 import by.teachmeskills.eshop.dto.CategoryDto;
 import by.teachmeskills.eshop.services.CategoryService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.Optional;
-
 import static by.teachmeskills.eshop.PagesPathEnum.UPLOAD_PAGE;
 
 @Validated
@@ -62,22 +53,6 @@ public class CategoryController {
         return new ModelAndView(UPLOAD_PAGE.getPath());
     }
 
-    @Operation(
-            summary = "Find all categories",
-            description = "Find all existed categories in Eshop",
-            tags = {"category"})
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "All categories were found",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class)))
-            ),
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Categories not fount - forbidden operation"
-            )
-    })
-//    @Parameter(name = "name", description = "Name of category")
     @GetMapping("/all/{id}")
     public ResponseEntity<List<CategoryDto>> getAllCategories(@Min(value = 5, message = "Min value for Id is 5") @PathVariable String id) {
         System.out.println(id);
@@ -94,30 +69,8 @@ public class CategoryController {
         }
     }
 
-    @Operation(
-            summary = "Create category",
-            description = "Create new category",
-            tags = {"category"})
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "Category was successfully created",
-                    content = @Content(schema = @Schema(implementation = CategoryDto.class))
-            ),
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Category not created - forbidden operation"
-            )
-    })
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            required = true,
-            description = "Create category body",
-            content = @Content(schema = @Schema(implementation = CategoryDto.class))
-    )
-    @PostMapping
-//    @ResponseStatus(HttpStatus.CREATED) //Or we can use @ResponseStatus(HttpStatus.CREATED) annotation with appropriate status code to show the result
-//    public void createCategory(@RequestBody CategoryDto categoryDto) {
-    public ResponseEntity<CategoryDto> createCategory(@Valid @RequestBody CategoryDto categoryDto) {
+     @PostMapping
+    public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryDto categoryDto) {
         CategoryDto created = categoryService.createCategory(categoryDto);
         if (Optional.ofNullable(created).isPresent()) {
             return new ResponseEntity<>(created, HttpStatus.CREATED);

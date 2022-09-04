@@ -1,8 +1,8 @@
 package by.teachmeskills.eshop.repositories;
 
 import by.teachmeskills.eshop.entities.Product;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;

@@ -4,7 +4,6 @@ import by.teachmeskills.eshop.dto.CategoryDto;
 import by.teachmeskills.eshop.entities.Category;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
 import java.util.List;
 
 public interface CategoryService extends BaseService<Category>{

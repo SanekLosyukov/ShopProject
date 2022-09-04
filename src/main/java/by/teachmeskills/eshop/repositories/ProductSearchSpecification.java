@@ -4,7 +4,6 @@ import by.teachmeskills.eshop.dto.SearchParamsDto;
 import by.teachmeskills.eshop.entities.Category;
 import by.teachmeskills.eshop.entities.Product;
 import org.springframework.data.jpa.domain.Specification;
-
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
@@ -27,8 +26,8 @@ public class ProductSearchSpecification implements Specification<Product> {
 
         if (Optional.ofNullable(searchParamsDto.getSearchKey()).isPresent() && !searchParamsDto.getSearchKey().isBlank()) {
             predicates.add(criteriaBuilder
-                    .or(criteriaBuilder.equal(root.get("name"), searchParamsDto.getSearchKey()),
-                            criteriaBuilder.equal(root.get("description"), searchParamsDto.getSearchKey())));
+                    .or(criteriaBuilder.like(root.get("name"), "%" + searchParamsDto.getSearchKey() + "%"),
+                            criteriaBuilder.like(root.get("description"), "%" + searchParamsDto.getSearchKey() + "%")));
         }
 
         if (searchParamsDto.getPriceFrom() > 0) {

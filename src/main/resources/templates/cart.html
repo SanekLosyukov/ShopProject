@@ -34,13 +34,10 @@
                     <a class="nav-link" th:href="@{/cart/open}">Корзина</a>
                 </li>
             </ul>
-            <form method="post" class="d-flex">
-                <input class="form-control me-2" id="search" type="text" placeholder="Введите название товара"
-                       name="search"
-                       required>
-                <a th:href="@{/search}">
-                    <button class="btn btn-primary" type="button">Найти</button>
-                </a>
+            <form method="post" th:action="@{/search}" class="d-flex">
+                <input class="form-control me-2" id="searchKey" type="text" placeholder="Введите название товара"
+                       name="searchKey" required>
+                <button class="btn btn-primary" type="submit">Найти</button>
             </form>
         </div>
     </div>
@@ -57,7 +54,6 @@
 </nav>
 <div class="container mt-3">
     <h2>Корзина </h2>
-
     <div class="row" th:each="product : ${cart.getProducts()}">
         <div class="col-sm-2 p-3 ">
             <img class="card-img" style="width:130px;height:160px"
@@ -66,10 +62,9 @@
         <div class="col-sm-6 p-3">
             <a><h5>Описание:</h5> <h6 th:text="${product.key.getDescription()}"></h6></a><br>
             <a>
-                <h4>Цена:<h6 th:text="${product.key.getPrice()}"></h6></h4>
+                <h4>Цена:<h6 th:text="${product.key.getPrice()} + 'BYN'"></h6></h4>
             </a><br>
         </div>
-
         <div class="col-sm-3 p-3">
             <div class="col-sm-3 p-3">
                 <a th:href="@{/cart/remove(product_id=${product.key.getId()})}"
@@ -80,13 +75,12 @@
     </div>
     <h4>Общая сумма добавленных в корзину товаров: <h6 th:text="${cart.getTotalPrice()}"> руб.</h6></h4>
     <a th:href="@{/order/create}">
-        <!--                    (product_id=${product.key.getId()})-->
         <button id="addProductToOrder" type="submit" class="btn btn-success"
                 onclick="productAddedToOrder()">Оформить заказ
         </button>
         <br>
         <br>
     </a>
-
+</div>
 </body>
 </html>

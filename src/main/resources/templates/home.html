@@ -30,14 +30,14 @@
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/cart/open}">Корзина</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/category/upload}">Добавить новые категории</a>
+                </li>
             </ul>
             <form method="post" th:action="@{/search}" class="d-flex">
-
-                    <input class="form-control me-2" id="search" type="text" placeholder="Введите название товара"
-                           name="search" required>
-
-                    <button class="btn btn-primary" type="button">Найти</button>
-
+                    <input class="form-control me-2" id="searchKey" type="text" placeholder="Введите название товара"
+                           name="searchKey" required>
+                    <button class="btn btn-primary" type="submit">Найти</button>
             </form>
         </div>
     </div>
@@ -53,7 +53,6 @@
     <a class="navbar-brand" href="javascript:void(0)">SanekShop Все права защищены</a>
 </nav>
 
-
 <div class="container-fluid"><br>
 
     <div class="container mt-3">
@@ -61,7 +60,7 @@
         <p>Выберите категорию</p>
         <div class="row" type="category" th:each="c : ${categories}">
             <div class="col-sm-2 p-3">
-                <img class="card-img" style="width:150px;height:120px"
+                <img class="card-img" style="width:130px;height:130px"
                      th:src="${'/images/' + c.getImagePath}" alt="Card image"> <br>
             </div>
             <div class="col-sm-6 p-3">
@@ -71,6 +70,8 @@
             </div>
         </div>
     </div>
+    <br>
+    <br>
 </div>
 
 <div class="container-fluid mt-3">

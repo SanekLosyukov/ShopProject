@@ -35,13 +35,10 @@
                     <a class="nav-link" th:href="@{/cart/open}">Корзина</a>
                 </li>
             </ul>
-            <form method="post" class="d-flex">
-                <input class="form-control me-2" id="search" type="text" placeholder="Введите название товара"
-                       name="search"
-                       required>
-                <a th:href="@{/search}">
-                    <button class="btn btn-primary" type="button">Найти</button>
-                </a>
+            <form method="post" th:action="@{/search}" class="d-flex">
+                <input class="form-control me-2" id="searchKey" type="text" placeholder="Введите название товара"
+                       name="searchKey" required>
+                <button class="btn btn-primary" type="submit">Найти</button>
             </form>
         </div>
     </div>
@@ -57,7 +54,6 @@
     <a class="navbar-brand" href="javascript:void(0)">SanekShop Все права защищены</a>
 </nav>
 <div class="container">
-
     <div class="col-md-8 offset-md-4">
         <h2>Register</h2>
         <p>Please, enter your credentials</p>
@@ -78,7 +74,6 @@
                     <input type="text" class="form-control w-25" id="email" placeholder="Enter email" name="email"
                            required>
                     <span class="error" th:text="${emailError}"></span>
-
                 </div>
                 <div class="form-group">
                     <label for="password">Password:</label>
@@ -89,7 +84,6 @@
                 </div>
                 <br>
                 <button type="submit" class="btn btn-primary">Save credentials</button>
-
             </div>
         </form>
     </div>

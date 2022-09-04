@@ -30,13 +30,10 @@
                     <a class="nav-link" th:href="@{/cart/open}">Корзина</a>
                 </li>
             </ul>
-            <form method="post" class="d-flex">
-                <input class="form-control me-2" id="search" type="text" placeholder="Введите название товара"
-                       name="search"
-                       required>
-                <a th:href="@{/search}">
-                    <button class="btn btn-primary" type="button">Найти</button>
-                </a>
+            <form method="post" th:action="@{/search}" class="d-flex">
+                <input class="form-control me-2" id="searchKey" type="text" placeholder="Введите название товара"
+                       name="searchKey" required>
+                <button class="btn btn-primary" type="submit">Найти</button>
             </form>
         </div>
     </div>
@@ -53,39 +50,72 @@
 </nav>
 
 <div class="container mt-3">
-    <ul class="pagination">
-        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-        <li class="page-item"><a class="page-link" th:href="@{1?pageNumber=0}">1</a></li>
-        <li class="page-item"><a class="page-link" th:href="@{1?pageNumber=1}">2</a></li>
-        <li class="page-item"><a class="page-link" th:href="@{1?pageNumber=2}">3</a></li>
-        <li class="page-item"><a class="page-link" th:href="@{1?pageNumber=3}">4</a></li>
-        <li class="page-item"><a class="page-link" th:href="@{1?pageNumber=4}">5</a></li>
-        <li class="page-item"><a class="page-link" href="#">Next</a></li>
-    </ul>
+    <h2>Результат поиска</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Найденные товары</th>
+            <th></th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            <td>
+                <div class="col-md-8 offset-md-4">
+                    <form method="POST" th:action="@{/search}">
+                        <div class="form-group">
+                            <label for="searchKey">Поиск товара</label>
+                            <input class="form-control me-2" id="searchKey" type="text"
+                                   placeholder="Поиск"
+                                   name="searchKey">
+
+                            <label for="categoryName">Категория</label>
+                            <input class="form-control me-2" id="categoryName" type="text"
+                                   placeholder="Категория"
+                                   name="categoryName">
+
+                            <label for="priceFrom">Цена от</label>
+                            <input class="form-control me-2" id="priceFrom" type="text"
+                                   placeholder="Цена от"
+                                   name="priceFrom">
+
+                            <label for="priceTo">Цена до</label>
+                            <input class="form-control me-2" id="priceTo" type="text"
+                                   placeholder="Цена до"
+                                   name="priceTo">
+
+                            <button type="submit" class="btn btn-primary">Найти</button>
+                        </div>
+                        <br>
+                    </form>
+                </div>
+            </td>
+            <td>
+                <div class="row" th:each="p : ${searchedProducts}">
+                    <div class="col-sm-2 p-3 ">
+                        <a th:href="@{'/product/' + ${p.id}}"></a>
+                        <img class="card-img" style="width:120px;height:150px"
+                             th:src="${'/images/' + p.getMainImage}" alt="Card image">
+                        </a>
+                        <br>
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <h5><a th:href="@{'/product/' + ${p.id}}" th:text="${p.name}"></a></h5>
+                        <a><h5>Описание:</h5> <h6 th:text="${p.description}"></h6></a>
+                        <a><h5>Цена:</h5> <h5 th:text="${p.price} +  BYN"></h5></a>
+                    </div>
+                    <div class="col-sm-3 p-3">
+                    </div>
+                </div>
+
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 
-<div class="container mt-3">
-    <h2>Страница поиска товаров</h2>
-
-    <div class="row" th:each="p : ${searchedProducts}">
-<!--        <div class="col-sm-2 p-3 ">-->
-<!--            <a th:href="@{'/product/' + ${p.id}}"></a>-->
-<!--            <img class="card-img" style="width:120px;height:150px"-->
-<!--                 th:src="${'/images/' + p.getMainImage}" alt="Card image">-->
-<!--            </a>-->
-<!--            <br>-->
-<!--        </div>-->
-        <div class="col-sm-6 p-3">
-            <h5><a th:href="@{'/product/' + ${p.id}}" th:text="${p.name}"></a></h5>
-            <a><h5>Описание:</h5> <h6 th:text="${p.description}"></h6></a>
-            <a><h5>Цена:</h5> <h5 th:text="${p.price} +  BYN"></h5></a>
-        </div>
-        <div class="col-sm-3 p-3">
-        </div>
-    </div>
-    <br>
-    <br>
-</div>
 
 </body>
 </html>

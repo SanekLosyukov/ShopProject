@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -22,7 +21,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "images")
 public class ProductImage extends BaseEntity {
-
     @Column(name = "IMAGE")
     private String imagePath;
 

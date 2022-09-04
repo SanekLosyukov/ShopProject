@@ -9,7 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,31 +22,20 @@ public class CustomUserDetailsService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    //    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        UserDetails userDetails = null;
-//        Optional<User> user = userRepository.findByEmail(username);
-//        if (user.isPresent() && Objects.equals(username, "admin")) {
-//            Set<GrantedAuthority> roles = new HashSet<>();
-//            roles.add(new SimpleGrantedAuthority(UserRoleEnum.ADMIN.name()));
-//            userDetails = new org.springframework.security.core.userdetails.User(user.get().getEmail(), user.get().getPassword(), roles);
-//        } else {
-//            Set<GrantedAuthority> roles = new HashSet<>();
-//            roles.add(new SimpleGrantedAuthority(UserRoleEnum.USER.name()));
-//            userDetails = new org.springframework.security.core.userdetails.User(user.get().getEmail(), user.get().getPassword(), roles);
-////        }
-////            throw new UsernameNotFoundException("User wasn't found");
-//        }
-//        return userDetails;
-//    }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserDetails userDetails;
         Optional<User> user = userRepository.findByEmail(username);
         if (user.isPresent()) {
-            Set<GrantedAuthority> roles = new HashSet<>();
-            roles.add(new SimpleGrantedAuthority(UserRoleEnum.USER.name()));
-            userDetails = new org.springframework.security.core.userdetails.User(user.get().getEmail(), user.get().getPassword(), roles);
+            if (Objects.equals(username, "admin")) {
+                Set<GrantedAuthority> roles = new HashSet<>();
+                roles.add(new SimpleGrantedAuthority(UserRoleEnum.ADMIN.name()));
+                userDetails = new org.springframework.security.core.userdetails.User(user.get().getEmail(), user.get().getPassword(), roles);
+            } else {
+                Set<GrantedAuthority> roles = new HashSet<>();
+                roles.add(new SimpleGrantedAuthority(UserRoleEnum.USER.name()));
+                userDetails = new org.springframework.security.core.userdetails.User(user.get().getEmail(), user.get().getPassword(), roles);
+            }
         } else {
             throw new UsernameNotFoundException("User wasn't found");
         }

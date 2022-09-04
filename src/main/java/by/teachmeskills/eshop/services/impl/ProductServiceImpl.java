@@ -8,24 +8,30 @@ import by.teachmeskills.eshop.repositories.CategoryRepository;
 import by.teachmeskills.eshop.repositories.ProductRepository;
 import by.teachmeskills.eshop.repositories.ProductSearchSpecification;
 import by.teachmeskills.eshop.services.ProductService;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.HashMap;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-
+import java.util.Optional;
 import static by.teachmeskills.eshop.PagesPathEnum.PRODUCT_PAGE;
 import static by.teachmeskills.eshop.PagesPathEnum.SEARCH_PAGE;
 import static by.teachmeskills.eshop.RequestParamsEnum.PRODUCT;
 import static by.teachmeskills.eshop.RequestParamsEnum.SEARCHED_PRODUCTS;
+import static by.teachmeskills.eshop.RequestParamsEnum.SEARCH_PARAMS;
 
+@Slf4j
 @Service
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
@@ -65,7 +71,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> getAllForCategoryPaged(int categoryId, int pageNumber, int pageSize) {
-//        Pageable paging = PageRequest.of(pageNumber, pageSize);
         Pageable paging = PageRequest.of(pageNumber, pageSize, Sort.by("name").ascending());
         Page<Product> products = productRepository.findAllByCategoryId(categoryId, paging);
         return products.getContent();
@@ -79,13 +84,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> searchProducts(String key, String value) {
-        Map<String, String> searchParams = new HashMap<>();
-        searchParams.put(key, value);
-        return productRepository.findProductsListByParams(searchParams);
-    }
-
-    @Override
     public ModelAndView getProductData(int id) {
         ModelMap model = new ModelMap();
         productRepository.findById(id).ifPresent(p -> {
@@ -95,11 +93,57 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductDto createProduct(ProductDto productDto) {
+        try {
+            Product product = productConverter.fromDto(productDto);
+            product = productRepository.save(product);
+            return productConverter.toDto(product);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
     public ModelAndView searchProducts(SearchParamsDto searchParamsDto) {
         ModelMap modelParams = new ModelMap();
         ProductSearchSpecification productSearchSpecification = new ProductSearchSpecification(searchParamsDto);
-        List<ProductDto> products= productRepository.findAll(productSearchSpecification).stream().map(productConverter::toDto).toList();
+        List<ProductDto> products = productRepository.findAll(productSearchSpecification).stream().map(productConverter::toDto).toList();
+        modelParams.addAttribute(SEARCH_PARAMS.getValue(), searchParamsDto);
         modelParams.addAttribute(SEARCHED_PRODUCTS.getValue(), products);
         return new ModelAndView(SEARCH_PAGE.getPath(), modelParams);
+    }
+
+    @Override
+    public List<ProductDto> saveProductsFromFile(MultipartFile file) {
+        List<ProductDto> csvProducts = parseCsv(file);
+        List<Product> products = Optional.ofNullable(csvProducts)
+                .map(list -> list.stream()
+                        .map(productConverter::fromDto)
+                        .toList())
+                .orElse(null);
+        if (Optional.ofNullable(products).isPresent()) {
+            productRepository.saveAll(products);
+            return csvProducts;
+        }
+        return Collections.emptyList();
+    }
+
+    private List<ProductDto> parseCsv(MultipartFile file) {
+        if (Optional.ofNullable(file).isPresent()) {
+            try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+                CsvToBean<ProductDto> csvToBean = new CsvToBeanBuilder(reader)
+                        .withType(ProductDto.class)
+                        .withIgnoreLeadingWhiteSpace(true)
+                        .withSeparator(',')
+                        .build();
+
+                return csvToBean.parse();
+            } catch (Exception ex) {
+                log.error("Exception occurred during CSV parsing: {}", ex.getMessage());
+            }
+        } else {
+            log.error("Empty CSV file is uploaded.");
+        }
+        return Collections.emptyList();
     }
 }

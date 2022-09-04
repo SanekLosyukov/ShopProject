@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProductConverter {
     private final CategoryRepository categoryRepository;
-
     public ProductConverter(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
@@ -19,6 +18,7 @@ public class ProductConverter {
                 .name(product.getName())
                 .description(product.getDescription())
                 .price(product.getPrice())
+                .mainImage(product.getMainImage())
                 .categoryId(product.getCategory().getId())
                 .build();
     }
@@ -28,6 +28,7 @@ public class ProductConverter {
                 .name(productDto.getName())
                 .description(productDto.getDescription())
                 .price(productDto.getPrice())
+                .mainImage(productDto.getMainImage())
                 .category(categoryRepository.findById(productDto.getCategoryId()).orElse(null))
                 .build();
     }

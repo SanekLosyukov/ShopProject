@@ -10,6 +10,7 @@ public enum PagesPathEnum {
     PRODUCT_PAGE("product"),
     ORDER_PAGE("order"),
     UPLOAD_PAGE("upload"),
+    UPLOAD2_PAGE("upload2"),
     ERROR_PAGE("error");
 
     private final String path;

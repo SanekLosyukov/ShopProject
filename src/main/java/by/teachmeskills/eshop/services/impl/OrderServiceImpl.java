@@ -13,11 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
-
-import static by.teachmeskills.eshop.PagesPathEnum.CART_PAGE;
 import static by.teachmeskills.eshop.PagesPathEnum.ORDER_PAGE;
 
 
@@ -35,31 +32,6 @@ public class OrderServiceImpl implements OrderService {
         this.orderDetailsRepository = orderDetailsRepository;
     }
 
-    //    @Override
-//    public void createOrder(int productId) {
-////        User authUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        Optional<Product> product = productRepository.findById(productId);
-//        User authUser = userRepository.findByEmailAndPassword("admin", "admin");
-//        Order order = Order.builder()
-//                .user(authUser)
-//                .date(LocalDateTime.now())
-//                .price(1111)
-//                .build();
-//
-//        OrderDetailsId orderDetailsId = OrderDetailsId.builder()
-//                .order(order)
-//                .product(product.get())
-//                .build();
-//
-//        OrderDetails orderDetails = OrderDetails.builder()
-//                .orderDetailsId(orderDetailsId)
-//                .quantity(10)
-//                .build();
-//
-//        orderRepository.save(order);
-//        orderDetailsRepository.save(orderDetails);
-//    }
-//}
     @Override
     public ModelAndView createOrder(Cart cart) {
         ModelMap modelParams = new ModelMap();

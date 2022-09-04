@@ -34,13 +34,10 @@
                     <a class="nav-link" th:href="@{/cart/open}">Корзина</a>
                 </li>
             </ul>
-            <form method="post" class="d-flex">
-                <input class="form-control me-2" id="search" type="text" placeholder="Введите название товара"
-                       name="search"
-                       required>
-                <a th:href="@{/search}">
-                    <button class="btn btn-primary" type="button">Найти</button>
-                </a>
+            <form method="post" th:action="@{/search}" class="d-flex">
+                <input class="form-control me-2" id="searchKey" type="text" placeholder="Введите название товара"
+                       name="searchKey" required>
+                <button class="btn btn-primary" type="submit">Найти</button>
             </form>
         </div>
     </div>
@@ -89,6 +86,5 @@
         </form>
     </div>
 </div>
-
 </body>
 </html>
