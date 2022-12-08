@@ -3,13 +3,19 @@ package by.teachmeskills.eshop.services.impl;
 import by.teachmeskills.eshop.dto.ProductDto;
 import by.teachmeskills.eshop.dto.SearchParamsDto;
 import by.teachmeskills.eshop.dto.converters.ProductConverter;
+import by.teachmeskills.eshop.entities.BaseEntity;
 import by.teachmeskills.eshop.entities.Product;
 import by.teachmeskills.eshop.repositories.CategoryRepository;
 import by.teachmeskills.eshop.repositories.ProductRepository;
 import by.teachmeskills.eshop.repositories.ProductSearchSpecification;
 import by.teachmeskills.eshop.services.ProductService;
+import com.opencsv.CSVWriter;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,16 +25,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import static by.teachmeskills.eshop.PagesPathEnum.CATEGORY_PAGE;
 import static by.teachmeskills.eshop.PagesPathEnum.PRODUCT_PAGE;
 import static by.teachmeskills.eshop.PagesPathEnum.SEARCH_PAGE;
 import static by.teachmeskills.eshop.RequestParamsEnum.PRODUCT;
-import static by.teachmeskills.eshop.RequestParamsEnum.SEARCHED_PRODUCTS;
 import static by.teachmeskills.eshop.RequestParamsEnum.SEARCH_PARAMS;
 
 @Slf4j
@@ -70,10 +78,24 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getAllForCategoryPaged(int categoryId, int pageNumber, int pageSize) {
-        Pageable paging = PageRequest.of(pageNumber, pageSize, Sort.by("name").ascending());
-        Page<Product> products = productRepository.findAllByCategoryId(categoryId, paging);
-        return products.getContent();
+    public ModelAndView getCategoryProductsData(int id, String nameCategory, int pageNumber, int pageSize) {
+        ModelMap modelMap = new ModelMap();
+        Pageable paging = PageRequest.of(pageNumber, pageSize, Sort.by("name", "description"));
+        Page<Product> page = productRepository.findAllByCategoryId(id, paging);
+        modelMap.addAttribute("nameCategory", nameCategory);
+        modelMap.addAttribute("categoryId", id);
+        modelMap.addAttribute("products", page.getContent());
+        addAttributeToModelMap(page, pageNumber, pageSize, modelMap);
+        return new ModelAndView(CATEGORY_PAGE.getPath(), modelMap);
+    }
+
+    protected void addAttributeToModelMap(Page<? extends BaseEntity> page, int pageNumber, int pageSize, ModelMap modelMap) {
+        modelMap.addAttribute("pageNumber", pageNumber);
+        modelMap.addAttribute("pageSize", pageSize);
+        modelMap.addAttribute("totalElements", page.getTotalElements());
+        modelMap.addAttribute("totalPages", page.getTotalPages());
+        modelMap.addAttribute("isFirstPage", page.isFirst());
+        modelMap.addAttribute("isLastPage", page.isLast());
     }
 
     @Override
@@ -104,13 +126,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ModelAndView searchProducts(SearchParamsDto searchParamsDto) {
-        ModelMap modelParams = new ModelMap();
+    public ModelAndView searchProducts(SearchParamsDto searchParamsDto, int pageNumber, int pageSize) {
+        ModelMap modelMap = new ModelMap();
         ProductSearchSpecification productSearchSpecification = new ProductSearchSpecification(searchParamsDto);
-        List<ProductDto> products = productRepository.findAll(productSearchSpecification).stream().map(productConverter::toDto).toList();
-        modelParams.addAttribute(SEARCH_PARAMS.getValue(), searchParamsDto);
-        modelParams.addAttribute(SEARCHED_PRODUCTS.getValue(), products);
-        return new ModelAndView(SEARCH_PAGE.getPath(), modelParams);
+        Pageable paging = PageRequest.of(pageNumber, pageSize, Sort.by("name", "description"));
+        Page<Product> page = productRepository.findAll(productSearchSpecification, paging);
+        modelMap.addAttribute(SEARCH_PARAMS.getValue(), searchParamsDto);
+        modelMap.addAttribute("foundProducts", page.getContent());
+        addAttributeToModelMap(page, pageNumber, pageSize, modelMap);
+        return new ModelAndView(SEARCH_PAGE.getPath(), modelMap);
     }
 
     @Override
@@ -126,6 +150,22 @@ public class ProductServiceImpl implements ProductService {
             return csvProducts;
         }
         return Collections.emptyList();
+    }
+
+    @Override
+    public void writeProductsCategoryToCsv(int categoryId, HttpServletResponse response) {
+        try {
+            response.setContentType("text/csv");
+            response.setCharacterEncoding("UTF8");
+            response.addHeader("Content-Disposition", "attachment; filename=productsCategory.csv");
+            List<Product> products = productRepository.findAllByCategoryId(categoryId);
+            StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(response.getWriter())
+                    .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
+                    .build();
+            beanToCsv.write(products);
+        } catch (CsvDataTypeMismatchException | CsvRequiredFieldEmptyException | IOException e) {
+            log.error(e.getMessage());
+        }
     }
 
     private List<ProductDto> parseCsv(MultipartFile file) {

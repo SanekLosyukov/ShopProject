@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SearchParamsDto {
     private String searchKey;
-    private int priceFrom;
-    private int priceTo;
+    private String minPrice;
+    private String maxPrice;
     private String categoryName;
 }

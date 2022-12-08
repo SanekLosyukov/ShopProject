@@ -7,20 +7,32 @@ import by.teachmeskills.eshop.entities.Product;
 import by.teachmeskills.eshop.repositories.CategoryRepository;
 import by.teachmeskills.eshop.services.CategoryService;
 import by.teachmeskills.eshop.services.ProductService;
+import com.opencsv.CSVWriter;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import static by.teachmeskills.eshop.PagesPathEnum.CATEGORY_PAGE;
+import static by.teachmeskills.eshop.PagesPathEnum.START_PAGE;
 import static by.teachmeskills.eshop.RequestParamsEnum.CATEGORY_PARAM;
 
 @Slf4j
@@ -57,17 +69,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ModelAndView getCategoryData(int id, int pageNumber, int pageSize) {
-        ModelMap model = new ModelMap();
-
-        Optional<Category> category = categoryRepository.findById(id);
-
-        category.ifPresent(c -> {
-            List<Product> products = productService.getAllForCategoryPaged(c.getId(), pageNumber, pageSize);
-            c.setProductList(products);
-            model.addAttribute(CATEGORY_PARAM.getValue(), c);
-        });
-
-        return new ModelAndView(CATEGORY_PAGE.getPath(), model);
+        return null;
     }
 
     @Override
@@ -81,13 +83,26 @@ public class CategoryServiceImpl implements CategoryService {
             c.setProductList(products);
             model.addAttribute(CATEGORY_PARAM.getValue(), c);
         });
-
         return new ModelAndView(CATEGORY_PAGE.getPath(), model);
     }
 
     @Override
-    public List<CategoryDto> getAllCategories() {
-        return categoryRepository.findAll().stream().map(categoryConverter::toDto).toList();
+    public ModelAndView getAllCategories(int pageNumber, int pageSize) {
+        ModelMap modelMap = new ModelMap();
+        Pageable paging = PageRequest.of(pageNumber, pageSize, Sort.by("id"));
+        Page<Category> page = categoryRepository.findAll(paging);
+        modelMap.addAttribute("categories", page.getContent());
+        addAttributeToModelMap(page, pageNumber, pageSize, modelMap);
+        return new ModelAndView(START_PAGE.getPath(), modelMap);
+    }
+
+    private void addAttributeToModelMap(Page<Category> page, int pageNumber, int pageSize, ModelMap modelMap) {
+        modelMap.addAttribute("pageNumber", pageNumber);
+        modelMap.addAttribute("pageSize", pageSize);
+        modelMap.addAttribute("totalElements", page.getTotalElements());
+        modelMap.addAttribute("totalPages", page.getTotalPages());
+        modelMap.addAttribute("isFirstPage", page.isFirst());
+        modelMap.addAttribute("isLastPage", page.isLast());
     }
 
     @Override
@@ -119,6 +134,22 @@ public class CategoryServiceImpl implements CategoryService {
             return csvCategories;
         }
         return Collections.emptyList();
+    }
+
+    @Override
+    public void writeCategoriesToCsv(HttpServletResponse response) {
+        try {
+            response.setContentType("text/csv");
+            response.setCharacterEncoding("UTF8");
+            response.addHeader("Content-Disposition", "attachment; filename=categories.csv");
+            List<Category> categories = read();
+            StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(response.getWriter())
+                    .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
+                    .build();
+            beanToCsv.write(categories);
+        } catch (IOException | CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
+            log.error(e.getMessage());
+        }
     }
 
     private List<CategoryDto> parseCsv(MultipartFile file) {

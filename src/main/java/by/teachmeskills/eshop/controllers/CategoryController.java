@@ -1,7 +1,9 @@
 package by.teachmeskills.eshop.controllers;
 
 import by.teachmeskills.eshop.dto.CategoryDto;
+import by.teachmeskills.eshop.dto.ProductDto;
 import by.teachmeskills.eshop.services.CategoryService;
+import by.teachmeskills.eshop.services.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,48 +17,29 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-import javax.validation.constraints.Min;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Optional;
-import static by.teachmeskills.eshop.PagesPathEnum.UPLOAD_PAGE;
+import static by.teachmeskills.eshop.PagesPathEnum.UPLOAD2_PAGE;
 
 @Validated
 @Tag(name = "category", description = "The Category API")
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
+    private final ProductService productService;
     private final CategoryService categoryService;
-
-    public CategoryController(CategoryService categoryService) {
+    public CategoryController(ProductService productService, CategoryService categoryService) {
+        this.productService = productService;
         this.categoryService = categoryService;
     }
 
-    @GetMapping("/{id}")
-    public ModelAndView openCategoryPage(
-            @PathVariable int id,
-            @RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = "5") int pageSize) {
-        return categoryService.getCategoryData(id, pageNumber, pageSize);
-    }
-
-    @GetMapping("/{id}/{productName}")
-    public ModelAndView openCategoryPageWithCertainProducts(
-            @PathVariable int id,
-            @PathVariable String productName,
-            @RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = "10") int pageSize) {
-        return categoryService.getCategoryDataWithCertainProducts(id, productName, pageNumber, pageSize);
-    }
-
-    @GetMapping("/upload")
-    public ModelAndView openUploadCategoriesPage() {
-        return new ModelAndView(UPLOAD_PAGE.getPath());
-    }
-
-    @GetMapping("/all/{id}")
-    public ResponseEntity<List<CategoryDto>> getAllCategories(@Min(value = 5, message = "Min value for Id is 5") @PathVariable String id) {
-        System.out.println(id);
-        return new ResponseEntity<>(categoryService.getAllCategories(), HttpStatus.OK);
+    @GetMapping("{categoryName}/{categoryId}")
+    public ModelAndView openCategoryProductPage(@PathVariable String categoryName,
+                                                @PathVariable int categoryId,
+                                                @RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
+                                                @RequestParam(value = "pageSize", defaultValue = "5") int pageSize) {
+        return productService.getCategoryProductsData(categoryId, categoryName, pageNumber, pageSize);
     }
 
     @GetMapping("/single/{id}")
@@ -69,7 +52,7 @@ public class CategoryController {
         }
     }
 
-     @PostMapping
+    @PostMapping
     public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryDto categoryDto) {
         CategoryDto created = categoryService.createCategory(categoryDto);
         if (Optional.ofNullable(created).isPresent()) {
@@ -79,8 +62,18 @@ public class CategoryController {
         }
     }
 
+    @GetMapping("/upload")
+    public ModelAndView openUploadCategoriesPage() {
+        return new ModelAndView(UPLOAD2_PAGE.getPath());
+    }
+
     @PostMapping("/upload")
-    public ResponseEntity<List<CategoryDto>> createCategory(@RequestParam("file") MultipartFile file) throws Exception {
-        return new ResponseEntity<>(categoryService.saveCategoriesFromFile(file), HttpStatus.CREATED);
+    public ResponseEntity<List<ProductDto>> createProduct(@RequestParam("file") MultipartFile file) throws Exception {
+        return new ResponseEntity<>(productService.saveProductsFromFile(file), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/download")
+    public void downloadCsvFile(HttpServletResponse response, @RequestParam("categoryId") int id){
+        productService.writeProductsCategoryToCsv(id, response);
     }
 }

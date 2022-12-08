@@ -33,6 +33,10 @@ public class WebSecurityConfig {
                                         .hasAuthority(UserRoleEnum.ADMIN.name())
                                         .antMatchers("/product/upload/**", "/")
                                         .hasAuthority(UserRoleEnum.ADMIN.name())
+                                        .antMatchers("/category/download/**", "/")
+                                        .hasAuthority(UserRoleEnum.ADMIN.name())
+                                        .antMatchers("/product/download/**", "/")
+                                        .hasAuthority(UserRoleEnum.ADMIN.name())
                                         .and()
                                         .formLogin()
                                         .loginPage("/login")
@@ -57,5 +61,4 @@ public class WebSecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }

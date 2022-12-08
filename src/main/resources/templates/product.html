@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function productAddedToShoppingCartMsg() {
@@ -18,7 +19,7 @@
 
 <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="javascript:void(0)">SanekShop</a>
+        <a class="navbar-brand" th:href="@{/home}">DigitalSpace</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -37,36 +38,31 @@
                     <a class="nav-link" th:href="@{/cart/open}">Корзина</a>
                 </li>
             </ul>
-            <form method="post" th:action="@{/search}" class="d-flex">
+            <form method="post" th:action="@{'/search?categoryName=&minPrice=&maxPrice='}" class="d-flex">
                 <input class="form-control me-2" id="searchKey" type="text" placeholder="Введите название товара"
                        name="searchKey" required>
-                <button class="btn btn-primary" type="submit">Найти</button>
+                <button class="navSearchButton" type="submit">Найти</button>
             </form>
         </div>
     </div>
 </nav>
-<nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-bottom">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="https://www.onliner.by">При поддержке
-            <img srcset="https://gc.onliner.by/images/logo/onliner_logo.v3.png?1655469090, https://gc.onliner.by/images/logo/onliner_logo.v3@2x.png?1655469090 2x"
-                 src="https://gc.onliner.by/images/logo/onliner_logo.v3.png?1655469090" width="100" height="25"
-                 alt="Onlíner" class="onliner_logo">
-        </a>
-    </div>
-    <a class="navbar-brand" href="javascript:void(0)">SanekShop Все права защищены</a>
-</nav>
+
 <div class="container mt-3">
 
     <div class="row">
 
         <div class="col-sm-2 p-3 ">
-            <img class="card-img" style="width:130px;height:160px"
-                 th:src="${'/images/' + product.getMainImage}" alt="Card image">
+            <div class="card img-fluid" style="width:300px">
+                <img class="card-img-top" th:src="${'/images/' + product.getMainImage}" alt="Card image"
+                     style="width:100%">
+                <div class="card-img-overlay">
+
+                </div>
+
+            </div>
         </div>
         <div class="col-sm-6 p-3">
-            <a>
-                <h4>Название: <h4 th:text="${product.name}"></h4></h4>
-            </a><br>
+            <a><h4 th:text="${product.name}"></h4></a>
             <a><h5>Описание:</h5> <h6 th:text="${product.description}"></h6></a><br>
             <a>
                 <h4>Цена:<h6 th:text="${product.price} + 'BYN'"></h6></h4>
@@ -79,17 +75,18 @@
                 </button>
             </a>
         </div>
+        <div class="col-sm-2 p-3 ">
+            <div class="w3-content w3-display-container" th:each="p : ${product.imagePath}">
+                <img class="mySlides" th:src="${'/images/' + p.getImagePath}" style="height:300px">
 
-        <div class="w3-content w3-display-container" th:each="p : ${product.imagePath}">
-            <img class="mySlides" th:src="${'/images/' + p.getImagePath}" style="width:150px;height:220px">
+            </div>
+            <div>
+                <button class="w3-button w3-black w3-container-left" onclick="plusDivs(-1)">&#10094;</button>
+                <button class="w3-button w3-black w3-container-right" onclick="plusDivs(1)">&#10095;</button>
+            </div>
+            <br>
+            <br>
         </div>
-        <div>
-            <button class="w3-button w3-black w3-display-left" onclick="plusDivs(-1)">&#10094;</button>
-            <button class="w3-button w3-black w3-display-right" onclick="plusDivs(1)">&#10095;</button>
-        </div>
-        <br>
-        <br>
-
         <script>
             var slideIndex = 1;
             showDivs(slideIndex);
@@ -113,7 +110,49 @@
                 x[slideIndex - 1].style.display = "block";
             }
         </script>
+
     </div>
 </div>
+
+
+<div id="footer" class="w3-container w3-teal w3-grey">
+    <center>
+        <div class="w3-container">
+            <table class="w3-table">
+                <tr>
+                    <th>Информация</th>
+                    <th>Дополнительно</th>
+                    <th>Контакты</th>
+                    <th>Обратная связь</th>
+                </tr>
+                <tr>
+                    <td>Возврат товара</td>
+                    <td>Скидки</td>
+                    <td>РБ, г.Минск, ул. Октябрьская, 1</td>
+                    <td>Сообщить об ошибке</td>
+                </tr>
+                <tr>
+                    <td>Гарантия</td>
+                    <td>Доставка</td>
+                    <td>+375172010101</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Сотрудничать с нами</td>
+                    <td>О нас</td>
+                    <td>digitalspaceby@gmail.com</td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+    </center>
+</div>
+<div class="w3-container w3-teal w3-dark-grey">
+    <center>
+        <h5>DigitalSpace</h5>
+        <p>All Rights Reserved.</p>
+    </center>
+</div>
+
 </body>
 </html>

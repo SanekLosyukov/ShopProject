@@ -15,6 +15,9 @@ public enum RequestParamsEnum {
     POPULAR_CATEGORIES_LIST_REQ_PARAM("categories"),
     CATEGORY_PARAM("category"),
     PRODUCT_ID("product_id"),
+    PAGE_NUMBER("pageNumber"),
+    PAGE_SIZE ("pageSize"),
+    TOTAL_PAGES ("totalPages"),
     ERROR_PARAM("error");
 
     private final String value;
